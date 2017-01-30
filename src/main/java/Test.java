@@ -57,7 +57,7 @@ public class Test {
     private static Connection getMySqlConnection() {
         try {
             Class.forName("org.mariadb.jdbc.Driver").newInstance();
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/admin_fanoos?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true", "root", "qazzaq123");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/kelid?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true", "root", "123456789");
             return connection;
 //            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/admin_fanoos?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true", "admin_fanoos", "5nEziv6W8");
 //            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/admin_fanoos?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true", "root", "qazzaq123");
@@ -122,15 +122,114 @@ public class Test {
             "%DB%8C%D8%B2%D8%AF"};
 
 
+    static int start = 12886;
+
     public static void main(String[] args) {
         if (false) {
             readCategory();
             return;
         }
-        Connection connection = getOracleConnection();
-        if(true)
-        {
-            readDetail(connection);
+        final Connection connection = getOracleConnection();
+        final Connection connection2 = getMySqlConnection();
+        if (false) {
+            //for (int i = 0; i <3; i++)
+            {
+                new Thread(new Runnable() {
+                    public void run() {
+                        readDetail(connection, 13385, 13385 + 500);
+
+                    }
+                }).start();
+
+            }
+
+            return;
+        }
+        if (false) {
+            try {
+                Statement statement = connection.createStatement();
+                String query11 = "select *\n" +
+                        "  from (select f.id, max(g.id) id2\n" +
+                        "          from (select * from advers s where s.key = 'tel_2') f,\n" +
+                        "               (select * from advers s where s.key = 'tel_2') g\n" +
+                        "         where f.id > g.id\n" +
+                        "         group by f.id) k\n" +
+                        " where k.id - k.id2 > 10";
+
+                ResultSet resultSet = statement.executeQuery(query11);
+                while (resultSet.next()) {
+                    final int id = resultSet.getInt("id");
+                    final int id2 = resultSet.getInt("id2");
+                    new Thread(new Runnable() {
+                        public void run() {
+                            readDetail(connection, id2 + 1, id);
+
+                        }
+                    }).start();
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        if (true) {
+            try {
+                Statement statement = connection.createStatement();
+                String insert = "INSERT INTO `advers` (`id`, `id2`, `slugged_title`, `CATEGORY_ID`, `tel_2`, `title`, `email`,  `guilds`, `uuid`, `address`, `lat`, `lng`, `city_id`, `region`, `logo`, `tel_1`,`slogan`) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement statement2 = connection2.prepareStatement(insert);
+                String query11 = "select * from advers s pivot(max(value) for key in (" +
+                        "'description',\n" +
+                        "'slugged_title',\n" +
+                        "'tel_1',\n" +
+                        "'title',\n" +
+                        "'slogan',\n" +
+                        "'email',\n" +
+                        "'guilds',\n" +
+                        "'lat',\n" +
+                        "'address',\n" +
+                        "'region',\n" +
+                        "'uuid',\n" +
+                        "'tel_2',\n" +
+                        "'logo',\n" +
+                        "'id',\n" +
+                        "'lng'\n" +
+                        "))";
+
+                ResultSet resultSet = statement.executeQuery(query11);
+                int i=0;
+
+                while (resultSet.next()) {
+                    i++;
+                    statement2 = connection2.prepareStatement(insert);
+                    statement2.setInt(1,resultSet.getInt("id"));
+                    statement2.setInt(2,resultSet.getInt("'id'"));
+                    statement2.setInt(4,resultSet.getInt("CATEGORY_ID"));
+                    statement2.setInt(13,resultSet.getInt("city_id"));
+                    statement2.setString(3,resultSet.getString("'slugged_title'"));
+                    statement2.setString(5,resultSet.getString("'tel_2'"));
+                    statement2.setString(6,resultSet.getString("'title'"));
+                    statement2.setString(7,resultSet.getString("'email'"));
+                    statement2.setString(9-1,resultSet.getString("'guilds'"));
+                    statement2.setString(10-1,resultSet.getString("'uuid'"));
+                    statement2.setString(11-1,resultSet.getString("'address'"));
+                    statement2.setString(12-1,resultSet.getString("'lat'"));
+                    statement2.setString(13-1,resultSet.getString("'lng'"));
+                    statement2.setString(15-1,resultSet.getString("'region'"));
+                    statement2.setString(16-1,resultSet.getString("'logo'"));
+                    statement2.setString(17-1,resultSet.getString("'tel_1'"));
+                    statement2.setString(18-1,resultSet.getString("'slogan'"));
+                    statement2.execute();
+                    if(i%10==0)
+                        System.out.println("--------------- "+i);
+
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return;
         }
 
@@ -194,20 +293,18 @@ public class Test {
         }
     }
 
-    private static void readDetail(Connection connection) {
+    private static void readDetail(Connection connection, int start, int end) {
         try {
             Statement statement = connection.createStatement();
-
-
-            ResultSet resultSet = statement.executeQuery(
-                    "select s.id,s.city_id,s.category_id,s.key,s.value  from advers s where s.key='uuid' and s.id>=1500 and s.id<2000 order by s.id ");
-            while(resultSet.next())
-            {
+            String query11 = "select s.id,s.city_id,s.category_id,s.key,s.value  from advers s where s.key='uuid' and s.id>=" + start + " and s.id<" + (end) + " order by s.id ";
+            System.out.println(query11);
+            ResultSet resultSet = statement.executeQuery(query11);
+            while (resultSet.next()) {
                 String uuid = resultSet.getString("value");
                 int id = resultSet.getInt("id");
                 int city_id = resultSet.getInt("city_id");
                 int category_id = resultSet.getInt("category_id");
-                String url = "http://dunro.com/api/v1.3/business/show/"+uuid;
+                String url = "http://dunro.com/api/v1.3/business/show/" + uuid;
                 try {
 
                     DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -228,20 +325,20 @@ public class Test {
                     while ((output = br.readLine()) != null) {
                         data.append(output);
                     }
-                    JSONObject object=new JSONObject(data.toString());
+                    JSONObject object = new JSONObject(data.toString());
                     JSONObject data1 = object.getJSONObject("data");
                     Object tel_2 = data1.get("tel_2");
                     Object region = data1.get("region");
                     Object email = data1.get("email");
                     Statement statement2 = connection.createStatement();
-                    String query=("INSERT INTO ADVERS(id, city_id, CATEGORY_ID, KEY, VALUE) select "+id+","+city_id+","+category_id+",'tel_2','"+tel_2.toString()+"' from dual union "
-                            +" select "+id+","+city_id+","+category_id+",'region','"+region+"' from dual union "
-                            +" select "+id+","+city_id+","+category_id+",'email','"+email+"' from dual");
+                    String query = ("INSERT INTO ADVERS(id, city_id, CATEGORY_ID, KEY, VALUE) select " + id + "," + city_id + "," + category_id + ",'tel_2','" + tel_2.toString() + "' from dual union "
+                            + " select " + id + "," + city_id + "," + category_id + ",'region','" + region + "' from dual union "
+                            + " select " + id + "," + city_id + "," + category_id + ",'email','" + email + "' from dual");
                     System.out.println(query);
                     statement2.executeUpdate(query);
+                    statement2.close();
 
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
