@@ -1,6 +1,3 @@
-/**
- * Created by Iman on 12/11/2016.
- */
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,13 +9,16 @@ import java.util.List;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Test {
+public class GardeshgariMain {
 
 
     static int[] id = new int[]{};
@@ -181,31 +181,31 @@ public class Test {
                         "))";
 
                 ResultSet resultSet = statement.executeQuery(query11);
-                int i=0;
+                int i = 0;
 
                 while (resultSet.next()) {
                     i++;
                     statement2 = connection2.prepareStatement(insert);
-                    statement2.setInt(1,resultSet.getInt("id"));
-                    statement2.setInt(2,resultSet.getInt("'id'"));
-                    statement2.setInt(4,resultSet.getInt("CATEGORY_ID"));
-                    statement2.setInt(13,resultSet.getInt("city_id"));
-                    statement2.setString(3,resultSet.getString("'slugged_title'"));
-                    statement2.setString(5,resultSet.getString("'tel_2'"));
-                    statement2.setString(6,resultSet.getString("'title'"));
-                    statement2.setString(7,resultSet.getString("'email'"));
-                    statement2.setString(9-1,resultSet.getString("'guilds'"));
-                    statement2.setString(10-1,resultSet.getString("'uuid'"));
-                    statement2.setString(11-1,resultSet.getString("'address'"));
-                    statement2.setString(12-1,resultSet.getString("'lat'"));
-                    statement2.setString(13-1,resultSet.getString("'lng'"));
-                    statement2.setString(15-1,resultSet.getString("'region'"));
-                    statement2.setString(16-1,resultSet.getString("'logo'"));
-                    statement2.setString(17-1,resultSet.getString("'tel_1'"));
-                    statement2.setString(18-1,resultSet.getString("'slogan'"));
+                    statement2.setInt(1, resultSet.getInt("id"));
+                    statement2.setInt(2, resultSet.getInt("'id'"));
+                    statement2.setInt(4, resultSet.getInt("CATEGORY_ID"));
+                    statement2.setInt(13, resultSet.getInt("city_id"));
+                    statement2.setString(3, resultSet.getString("'slugged_title'"));
+                    statement2.setString(5, resultSet.getString("'tel_2'"));
+                    statement2.setString(6, resultSet.getString("'title'"));
+                    statement2.setString(7, resultSet.getString("'email'"));
+                    statement2.setString(9 - 1, resultSet.getString("'guilds'"));
+                    statement2.setString(10 - 1, resultSet.getString("'uuid'"));
+                    statement2.setString(11 - 1, resultSet.getString("'address'"));
+                    statement2.setString(12 - 1, resultSet.getString("'lat'"));
+                    statement2.setString(13 - 1, resultSet.getString("'lng'"));
+                    statement2.setString(15 - 1, resultSet.getString("'region'"));
+                    statement2.setString(16 - 1, resultSet.getString("'logo'"));
+                    statement2.setString(17 - 1, resultSet.getString("'tel_1'"));
+                    statement2.setString(18 - 1, resultSet.getString("'slogan'"));
                     statement2.execute();
-                    if(i%10==0)
-                        System.out.println("--------------- "+i);
+                    if (i % 10 == 0)
+                        System.out.println("--------------- " + i);
 
 
                 }
@@ -288,6 +288,8 @@ public class Test {
                 int city_id = resultSet.getInt("city_id");
                 int category_id = resultSet.getInt("category_id");
                 String url = "http://dunro.com/api/v1.3/business/show/" + uuid;
+
+
                 try {
 
                     DefaultHttpClient httpClient = new DefaultHttpClient();
